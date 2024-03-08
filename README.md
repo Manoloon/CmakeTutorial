@@ -1,19 +1,30 @@
 # CMAKE PROJECT :
-basic CMakeLists.txt
-cmake_minimum_required(VERSION 3.25.0)
-project(CmakeTutorial VERSION 0.1.0 LANGUAGES C CXX)
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# fetch the dependencies needed
-include(FetchContent)
-FetchContent_Declare(
-	fmt
-	GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-	GIT_TAG 10.1.1
+cmakelists for imgui
+FetchContent_Populate(imgui
+  URL https://github.com/ocornut/imgui/archive/docking.zip
+  SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/imgui
 )
 
-FetchContent_MakeAvailable(fmt)
+set(OpenGL_GL_PREFERENCE "LEGACY")
+find_package(OpenGL 2 REQUIRED)
+find_package(glfw3 REQUIRED)
 
-add_executable(CmakeTutorial main.cpp)
-target_link_libraries(CmakeTutorial PRIVATE fmt::fmt)
+add_library(imgui_glfw STATIC
+  imgui/imgui.cpp
+  imgui/imgui_draw.cpp
+  imgui/imgui_demo.cpp
+  imgui/imgui_tables.cpp
+  imgui/imgui_widgets.cpp
+
+  imgui/backends/imgui_impl_glfw.cpp
+  imgui/backends/imgui_impl_opengl2.cpp
+)
+
+target_link_libraries(imgui_glfw PUBLIC glfw ${OPENGL_LIBRARIES})
+
+target_include_directories(imgui_glfw
+PUBLIC
+  ${CMAKE_CURRENT_LIST_DIR}/imgui
+  ${CMAKE_CURRENT_LIST_DIR}/imgui/backends
+)
